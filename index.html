@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Cabinet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 20px;
+        }
+        .add-dropdown {
+            margin-bottom: 30px;
+        }
+        .cabinet {
+            width: 60%;
+            margin: auto;
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            color: black;
+            margin-top: 30px;
+        }
+        .drawer {
+            background: #D8BFD8;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .drawer:hover {
+            background: #C8A2C8;
+        }
+        .med-list {
+            display: none;
+            background: #F3E5F5;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            color: black;
+        }
+        .entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+        }
+        .cubby-number {
+            font-weight: bold;
+        }
+        .medicine-name {
+            flex-grow: 1;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <h2>ACE DUMAGUETE DOCTORS INC - Pharmacy</h2>
+    
+    <input type="text" class="search-box" id="searchInput" placeholder="Search..." onkeyup="searchPage()">
+    
+    <div class="add-dropdown" id="addDropdown">
+        <form onsubmit="addMedicine(event)">
+            <input type="text" id="cabinetNumber" placeholder="Cabinet Number">
+            <select id="medPosition">
+                <option value="upper">Upper</option>
+                <option value="lower">Lower</option>
+            </select>
+            <input type="text" id="cubbyNumber" placeholder="Cubby # (1-20, optional)">
+            <input type="text" id="medicineName" placeholder="Medicine Name">
+            <button type="submit">Add</button>
+        </form>
+    </div>
+    
+    <div class="cabinet" id="medicineCabinet">
+        <script>
+            const cabinetContainer = document.getElementById("medicineCabinet");
+            for (let i = 1; i <= 8; i++) {
+                let cabinetDiv = document.createElement("div");
+                cabinetDiv.classList.add("drawer");
+                cabinetDiv.textContent = `Cabinet ${i}`;
+                cabinetDiv.onclick = function() {
+                    let medsSection = this.nextElementSibling;
+                    medsSection.style.display = medsSection.style.display === "block" ? "none" : "block";
+                };
+                
+                let medsSection = document.createElement("div");
+                medsSection.classList.add("med-list");
+                medsSection.innerHTML = `
+                    <div class='drawer' onclick="toggleMeds(this)">Upper Meds</div>
+                    <div class='med-list' id='cabinet${i}-upper'></div>
+                    <div class='drawer' onclick="toggleMeds(this)">Lower Meds</div>
+                    <div class='med-list' id='cabinet${i}-lower'></div>
+                `;
+                
+                cabinetContainer.appendChild(cabinetDiv);
+                cabinetContainer.appendChild(medsSection);
+            }
+
+            function toggleMeds(element) {
+                let medList = element.nextElementSibling;
+                medList.style.display = medList.style.display === "block" ? "none" : "block";
+            }
+
+            function addMedicine(event) {
+                event.preventDefault();
+                let cabinetNum = document.getElementById("cabinetNumber").value;
+                let position = document.getElementById("medPosition").value;
+                let cubbyNum = document.getElementById("cubbyNumber").value;
+                let medicine = document.getElementById("medicineName").value;
+
+                if (!medicine || !cabinetNum || isNaN(cabinetNum) || cabinetNum < 1 || cabinetNum > 8) return;
+                
+                let targetList = document.getElementById(`cabinet${cabinetNum}-${position}`);
+                if (targetList) {
+                    let entry = document.createElement("div");
+                    entry.classList.add("entry");
+                    entry.innerHTML = `<span class='cubby-number'>${cubbyNum ? `Cubby #${cubbyNum}` : ''}</span><span class='medicine-name'>${medicine}</span>`;
+                    targetList.appendChild(entry);
+                    targetList.style.display = "block";
+                    targetList.parentElement.style.display = "block";
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
